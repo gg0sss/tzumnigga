@@ -1,67 +1,61 @@
 import requests
-import sqlite3
+import json
 import os
 from bs4 import BeautifulSoup
 
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 CHAT_ID = os.environ["CHAT_ID"]
-
 SITE_URL = "https://collect.tsum.ru/"
 TG_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
+DB_FILE = "products.json"
 
 def send(msg):
+    """Отправить сообщение в Telegram"""
     requests.post(
         f"{TG_API}/sendMessage",
         json={"chat_id": CHAT_ID, "text": msg}
     )
 
-# --- 1. Ответ на /start ---
-updates = requests.get(f"{TG_API}/getUpdates").json()
+# Загружаем старую базу (если есть)
+if os.path.exists(DB_FILE):
+    with open(DB_FILE, "r", encoding="utf-8") as f:
+        old_products = json.load(f)
+else:
+    old_products = {}
 
-for upd in updates.get("result", []):
-    msg = upd.get("message", {})
-    text = msg.get("text", "")
-    chat = msg.get("chat", {}).get("id")
+# Парсим сайт
+try:
+    r = requests.get(SITE_URL, headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
+    soup = BeautifulSoup(r.text, "lxml")
+    cards = soup.select("a[href*='/product/']")
+    
+    new_products = {}
+    
+    for card in cards:
+        url = "https://collect.tsum.ru" + card["href"]
+        # Достаём название товара
+        title_elem = card.select_one(".product-card__title, h3, .title")
+        title = title_elem.get_text(strip=True) if title_elem else "Товар"
+        
+        text = card.get_text().lower()
+        in_stock = not any(x in text for x in ["нет в наличии", "продано", "sold out"])
+        
+        new_products[url] = {
+            "title": title,
+            "in_stock": in_stock
+        }
+        
+        # Проверяем: был в наличии, а теперь НЕТ
+        if url in old_products:
+            if old_products[url]["in_stock"] and not in_stock:
+                send(f"❌ ПРОДАНО\n\n{title}\n\n{url}")
+    
+    # Сохраняем новую базу
+    with open(DB_FILE, "w", encoding="utf-8") as f:
+        json.dump(new_products, f, ensure_ascii=False, indent=2)
+    
+    print(f"✅ Проверено товаров: {len(new_products)}")
 
-    if text == "/start" and str(chat) == CHAT_ID:
-        send(
-            "🤖 TSUM SOLD OUT BOT\n\n"
-            "Я слежу за TSUM Collect.\n"
-            "Напишу, когда товар уйдёт в sold-out."
-        )
-
-# --- 2. SOLD OUT логика ---
-conn = sqlite3.connect("data.db")
-c = conn.cursor()
-
-c.execute("""
-CREATE TABLE IF NOT EXISTS products (
-    url TEXT PRIMARY KEY,
-    in_stock INTEGER
-)
-""")
-
-r = requests.get(SITE_URL, headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
-soup = BeautifulSoup(r.text, "lxml")
-
-cards = soup.select("a[href*='/product/']")
-
-for card in cards:
-    url = "https://collect.tsum.ru" + card["href"]
-    text = card.get_text().lower()
-
-    in_stock = not any(x in text for x in ["нет в наличии", "продано"])
-
-    c.execute("SELECT in_stock FROM products WHERE url=?", (url,))
-    row = c.fetchone()
-
-    if row and row[0] == 1 and not in_stock:
-        send(f"❌ SOLD OUT\n{url}")
-
-    c.execute(
-        "INSERT OR REPLACE INTO products VALUES (?, ?)",
-        (url, int(in_stock))
-    )
-
-conn.commit()
-conn.close()
+except Exception as e:
+    send(f"⚠️ Ошибка парсинга:\n{str(e)}")
+    print(f"ERROR: {e}")
