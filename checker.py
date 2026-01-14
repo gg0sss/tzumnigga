@@ -154,13 +154,6 @@ try:
         json.dump(new_products, f, ensure_ascii=False, indent=2)
     
     print(f"\n✅ Всего проверено товаров: {len(new_products)}")
-    
-    # ТЕСТ: Симулируем продажу первого товара (удали после теста)
-    if len(new_products) > 0:
-        test_url = list(new_products.keys())[0]
-        test_title = new_products[test_url]["title"]
-        send(f"🧪 ТЕСТ: Симулирую продажу...\n\n❌ ПРОДАНО\n\n{test_title}\n\n{test_url}")
-    
     send(f"✅ Парсинг завершён\n\nОтслеживается товаров: {len(new_products)}")
 
 except Exception as e:
