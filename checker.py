@@ -75,10 +75,10 @@ try:
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(2)
             
-            # Ищем кнопку "Показать больше" / "Смотреть все"
+            # Ищем кнопку "Показать больше товаров"
             try:
                 print(f"  Попытка {attempts + 1}: ищем кнопку...")
-                button = driver.find_element(By.XPATH, "//button[contains(., 'больше') or contains(., 'Смотреть')]")
+                button = driver.find_element(By.XPATH, "//p[contains(text(), 'Показать больше товаров')]")
                 print(f"  Кнопка найдена! Кликаем...")
                 driver.execute_script("arguments[0].click();", button)
                 print(f"  Кнопка нажата!")
