@@ -46,16 +46,38 @@ try:
     for category_url in CATEGORIES:
         print(f"Парсинг: {category_url}")
         
-        r = requests.get(category_url, headers=headers, timeout=20)
-        print(f"  Status: {r.status_code}, Length: {len(r.text)}")
+        page = 1
+        all_cards = []
         
-        soup = BeautifulSoup(r.text, "lxml")
+        # Пробуем пагинацию - проходим по всем страницам
+        while True:
+            # Пробуем разные варианты пагинации
+            url_with_page = f"{category_url}?page={page}"
+            
+            r = requests.get(url_with_page, headers=headers, timeout=20)
+            print(f"  Страница {page}: Status {r.status_code}, Length: {len(r.text)}")
+            
+            soup = BeautifulSoup(r.text, "lxml")
+            cards = soup.select("a[href*='/item/ITEM']")
+            
+            if not cards:
+                # Если карточек нет - значит страницы закончились
+                print(f"  Страниц найдено: {page - 1}")
+                break
+            
+            all_cards.extend(cards)
+            print(f"  Найдено карточек на странице: {len(cards)}")
+            
+            page += 1
+            
+            # Защита от бесконечного цикла
+            if page > 50:
+                print(f"  СТОП: достигнут лимит 50 страниц")
+                break
         
-        # Ищем карточки товаров
-        cards = soup.select("a[href*='/item/ITEM']")
-        print(f"  Найдено карточек: {len(cards)}")
+        print(f"  ИТОГО карточек в категории: {len(all_cards)}")
         
-        for card in cards:
+        for card in all_cards:
             url = "https://collect.tsum.ru" + card["href"]
             
             # Пропускаем дубликаты
