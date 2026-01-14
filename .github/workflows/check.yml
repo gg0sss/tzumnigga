@@ -1,4 +1,5 @@
-name: TSUM SOLD OUT
+# Updated for scheduled runs
+   name: TSUM SOLD INNIGA
 
 on:
   schedule:
