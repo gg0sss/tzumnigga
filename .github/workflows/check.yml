@@ -1,5 +1,4 @@
-# Updated for scheduled runs
-   name: TSUM SOLD INNIGA
+name: TSUM SOLD INNIGA
 
 on:
   schedule:
@@ -39,6 +38,7 @@ jobs:
         run: |
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
+          git pull --rebase origin main
           git add products.json page_debug.html
           git diff --quiet && git diff --staged --quiet || git commit -m "Обновление БД товаров"
           git push
