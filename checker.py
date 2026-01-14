@@ -46,36 +46,33 @@ try:
     for category_url in CATEGORIES:
         print(f"Парсинг: {category_url}")
         
-        page = 1
         all_cards = []
         
-        # Пробуем пагинацию - проходим по всем страницам
-        while True:
-            # Пробуем разные варианты пагинации
-            url_with_page = f"{category_url}?page={page}"
+        # Пробуем разные параметры для загрузки всех товаров
+        params_to_try = [
+            "",  # без параметров
+            "?limit=1000",
+            "?size=1000", 
+            "?perPage=1000",
+            "?count=1000"
+        ]
+        
+        for param in params_to_try:
+            url = category_url + param
             
-            r = requests.get(url_with_page, headers=headers, timeout=20)
-            print(f"  Страница {page}: Status {r.status_code}, Length: {len(r.text)}")
-            
+            r = requests.get(url, headers=headers, timeout=20)
             soup = BeautifulSoup(r.text, "lxml")
             cards = soup.select("a[href*='/item/ITEM']")
             
-            if not cards:
-                # Если карточек нет - значит страницы закончились
-                print(f"  Страниц найдено: {page - 1}")
-                break
-            
-            all_cards.extend(cards)
-            print(f"  Найдено карточек на странице: {len(cards)}")
-            
-            page += 1
-            
-            # Защита от бесконечного цикла
-            if page > 50:
-                print(f"  СТОП: достигнут лимит 50 страниц")
-                break
+            if len(cards) > len(all_cards):
+                all_cards = cards
+                print(f"  {param if param else 'БЕЗ ПАРАМЕТРОВ'}: найдено {len(cards)} карточек")
+                
+                # Если нашли больше 100 - значит параметр сработал
+                if len(cards) > 100:
+                    break
         
-        print(f"  ИТОГО карточек в категории: {len(all_cards)}")
+        print(f"  ИТОГО: {len(all_cards)} товаров")
         
         for card in all_cards:
             url = "https://collect.tsum.ru" + card["href"]
