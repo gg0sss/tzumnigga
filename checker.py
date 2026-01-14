@@ -15,10 +15,15 @@ DB_FILE = "products.json"
 
 # Категории для отслеживания
 CATEGORIES = [
+    # Женские сумки
     "https://collect.tsum.ru/women/catalog/povsednevnye-sumki-82",
     "https://collect.tsum.ru/women/catalog/riukzaki-i-poiasnye-sumki-87",
     "https://collect.tsum.ru/women/catalog/dorozhnye-i-sportivnye-sumki-93",
-    "https://collect.tsum.ru/women/catalog/klatchi-i-vechernie-sumki-90"
+    "https://collect.tsum.ru/women/catalog/klatchi-i-vechernie-sumki-90",
+    # Мужские сумки
+    "https://collect.tsum.ru/men/catalog/riukzaki-i-poiasnye-sumki-246",
+    "https://collect.tsum.ru/men/catalog/povsednevnye-sumki-238",
+    "https://collect.tsum.ru/men/catalog/dorozhnye-i-sportivnye-sumki-249"
 ]
 
 def send(msg):
