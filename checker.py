@@ -39,6 +39,10 @@ try:
     print(f"Status code: {r.status_code}")
     print(f"Page length: {len(r.text)}")
     
+    # Сохраняем HTML для отладки
+    with open("page_debug.html", "w", encoding="utf-8") as f:
+        f.write(r.text[:50000])  # Первые 50k символов
+    
     soup = BeautifulSoup(r.text, "lxml")
     # Пробуем разные селекторы
     cards = soup.select("a[href*='/product/']")
