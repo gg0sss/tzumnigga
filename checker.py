@@ -44,14 +44,8 @@ try:
         f.write(r.text[:50000])  # Первые 50k символов
     
     soup = BeautifulSoup(r.text, "lxml")
-    # Пробуем разные селекторы
-    cards = soup.select("a[href*='/product/']")
-    
-    if not cards:
-        cards = soup.select(".product-card")
-    
-    if not cards:
-        cards = soup.select("[data-product-id]")
+    # TSUM использует /item/ а не /product/
+    cards = soup.select("a[href*='/item/ITEM']")
     
     print(f"Найдено карточек: {len(cards)}")
     
@@ -59,15 +53,17 @@ try:
     
     for card in cards:
         url = "https://collect.tsum.ru" + card["href"]
-        # Достаём название товара
-        title_elem = card.select_one(".product-card__title, h3, .title")
-        title = title_elem.get_text(strip=True) if title_elem else "Товар"
         
-        text = card.get_text().lower()
-        in_stock = not any(x in text for x in ["нет в наличии", "продано", "sold out"])
+        # Пытаемся найти название (бренд + цена как идентификатор)
+        brand = card.find("img", {"data-brandlogo": "true"})
+        brand_name = brand["alt"] if brand else "Товар"
+        
+        # Проверяем наличие по цене (если цены нет - товар продан)
+        price = card.find("span", class_=lambda x: x and "price" in x.lower())
+        in_stock = price is not None
         
         new_products[url] = {
-            "title": title,
+            "title": brand_name,
             "in_stock": in_stock
         }
         
