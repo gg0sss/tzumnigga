@@ -68,6 +68,8 @@ try:
         attempts = 0
         max_attempts = 50
         
+        print(f"  Начинаем поиск кнопки 'Показать больше'...")
+        
         while attempts < max_attempts:
             # Скроллим вниз
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -75,25 +77,29 @@ try:
             
             # Ищем кнопку "Показать больше" / "Смотреть все"
             try:
+                print(f"  Попытка {attempts + 1}: ищем кнопку...")
                 button = driver.find_element(By.XPATH, "//button[contains(., 'больше') or contains(., 'Смотреть')]")
+                print(f"  Кнопка найдена! Кликаем...")
                 driver.execute_script("arguments[0].click();", button)
-                print(f"  Нажата кнопка загрузки...")
+                print(f"  Кнопка нажата!")
                 time.sleep(3)
-            except:
+            except Exception as e:
                 # Кнопки нет - все товары загружены
+                print(f"  Кнопка не найдена: {e}")
                 break
             
             # Проверяем не зависли ли
             cards = driver.find_elements(By.CSS_SELECTOR, "a[href*='/item/ITEM']")
             current_count = len(cards)
+            print(f"  Текущее количество карточек: {current_count}")
             
             if current_count == last_count:
                 # Количество не изменилось - всё загружено
+                print(f"  Количество не изменилось - выходим")
                 break
             
             last_count = current_count
             attempts += 1
-            print(f"  Загружено карточек: {current_count}")
         
         # Собираем все карточки
         cards = driver.find_elements(By.CSS_SELECTOR, "a[href*='/item/ITEM']")
