@@ -16,6 +16,8 @@ def send(msg):
         json={"chat_id": CHAT_ID, "text": msg}
     )
 
+send("🤖 Тест: бот запустился!")
+
 # Загружаем старую базу (если есть)
 if os.path.exists(DB_FILE):
     with open(DB_FILE, "r", encoding="utf-8") as f:
