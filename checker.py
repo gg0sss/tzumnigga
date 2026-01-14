@@ -4,8 +4,8 @@ import os
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-BOT_TOKEN = os.environ["7999769425:AAF9d2UBqNWfhsvyght9oUGkuZ2fJzCsqbE"]
-CHAT_ID = os.environ["384948084"]
+BOT_TOKEN = os.environ["BOT_TOKEN"]
+CHAT_ID = os.environ["CHAT_ID"]
 
 URL = "https://collect.tsum.ru/"
 
@@ -15,8 +15,8 @@ HEADERS = {
 
 def send(msg):
     requests.post(
-        f"https://api.telegram.org/bot{7999769425:AAF9d2UBqNWfhsvyght9oUGkuZ2fJzCsqbE}/sendMessage",
-        json={"384948084": CHAT_ID, "text": msg}
+        f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage",
+        json={"chat_id": CHAT_ID, "text": msg}
     )
 
 conn = sqlite3.connect("data.db")
