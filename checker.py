@@ -25,9 +25,31 @@ else:
 
 # Парсим сайт
 try:
-    r = requests.get(SITE_URL, headers={"User-Agent": "Mozilla/5.0"}, timeout=20)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+        "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Accept-Encoding": "gzip, deflate, br",
+        "DNT": "1",
+        "Connection": "keep-alive",
+        "Upgrade-Insecure-Requests": "1"
+    }
+    r = requests.get(SITE_URL, headers=headers, timeout=20)
+    
+    print(f"Status code: {r.status_code}")
+    print(f"Page length: {len(r.text)}")
+    
     soup = BeautifulSoup(r.text, "lxml")
+    # Пробуем разные селекторы
     cards = soup.select("a[href*='/product/']")
+    
+    if not cards:
+        cards = soup.select(".product-card")
+    
+    if not cards:
+        cards = soup.select("[data-product-id]")
+    
+    print(f"Найдено карточек: {len(cards)}")
     
     new_products = {}
     
