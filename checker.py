@@ -1,7 +1,12 @@
 import requests
 import json
 import os
-from bs4 import BeautifulSoup
+import time
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 CHAT_ID = os.environ["CHAT_ID"]
@@ -18,10 +23,13 @@ CATEGORIES = [
 
 def send(msg):
     """Отправить сообщение в Telegram"""
-    requests.post(
-        f"{TG_API}/sendMessage",
-        json={"chat_id": CHAT_ID, "text": msg}
-    )
+    try:
+        requests.post(
+            f"{TG_API}/sendMessage",
+            json={"chat_id": CHAT_ID, "text": msg}
+        )
+    except Exception as e:
+        print(f"Ошибка отправки: {e}")
 
 # Загружаем старую базу (если есть)
 if os.path.exists(DB_FILE):
@@ -31,80 +39,116 @@ else:
     old_products = {}
 
 new_products = {}
-headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-    "Accept-Language": "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7",
-    "Accept-Encoding": "gzip, deflate, br",
-    "DNT": "1",
-    "Connection": "keep-alive",
-    "Upgrade-Insecure-Requests": "1"
-}
+
+# Настройка Chrome в headless режиме
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--no-sandbox")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--window-size=1920,1080")
+chrome_options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36")
 
 try:
-    # Парсим каждую категорию
+    send("🤖 Запуск парсинга...")
+    
+    driver = webdriver.Chrome(options=chrome_options)
+    
     for category_url in CATEGORIES:
-        print(f"Парсинг: {category_url}")
+        print(f"\nПарсинг: {category_url}")
+        driver.get(category_url)
         
-        all_cards = []
+        # Ждём загрузки первых карточек
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "a[href*='/item/ITEM']"))
+        )
         
-        # Пробуем разные параметры для загрузки всех товаров
-        params_to_try = [
-            "",  # без параметров
-            "?limit=1000",
-            "?size=1000", 
-            "?perPage=1000",
-            "?count=1000"
-        ]
+        # Скроллим и нажимаем "Показать больше" пока он есть
+        last_count = 0
+        attempts = 0
+        max_attempts = 50
         
-        for param in params_to_try:
-            url = category_url + param
+        while attempts < max_attempts:
+            # Скроллим вниз
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(2)
             
-            r = requests.get(url, headers=headers, timeout=20)
-            soup = BeautifulSoup(r.text, "lxml")
-            cards = soup.select("a[href*='/item/ITEM']")
+            # Ищем кнопку "Показать больше" / "Смотреть все"
+            try:
+                button = driver.find_element(By.XPATH, "//button[contains(., 'больше') or contains(., 'Смотреть')]")
+                driver.execute_script("arguments[0].click();", button)
+                print(f"  Нажата кнопка загрузки...")
+                time.sleep(3)
+            except:
+                # Кнопки нет - все товары загружены
+                break
             
-            if len(cards) > len(all_cards):
-                all_cards = cards
-                print(f"  {param if param else 'БЕЗ ПАРАМЕТРОВ'}: найдено {len(cards)} карточек")
+            # Проверяем не зависли ли
+            cards = driver.find_elements(By.CSS_SELECTOR, "a[href*='/item/ITEM']")
+            current_count = len(cards)
+            
+            if current_count == last_count:
+                # Количество не изменилось - всё загружено
+                break
+            
+            last_count = current_count
+            attempts += 1
+            print(f"  Загружено карточек: {current_count}")
+        
+        # Собираем все карточки
+        cards = driver.find_elements(By.CSS_SELECTOR, "a[href*='/item/ITEM']")
+        print(f"  ИТОГО товаров в категории: {len(cards)}")
+        
+        # Извлекаем данные
+        for card in cards:
+            try:
+                url = card.get_attribute("href")
                 
-                # Если нашли больше 100 - значит параметр сработал
-                if len(cards) > 100:
-                    break
-        
-        print(f"  ИТОГО: {len(all_cards)} товаров")
-        
-        for card in all_cards:
-            url = "https://collect.tsum.ru" + card["href"]
+                # Пропускаем дубликаты
+                if url in new_products:
+                    continue
+                
+                # Достаём бренд
+                try:
+                    brand_img = card.find_element(By.CSS_SELECTOR, "img[data-brandlogo='true']")
+                    brand_name = brand_img.get_attribute("alt")
+                except:
+                    brand_name = "Товар"
+                
+                # Проверяем наличие по цене
+                try:
+                    card.find_element(By.CSS_SELECTOR, "span[class*='price']")
+                    in_stock = True
+                except:
+                    in_stock = False
+                
+                new_products[url] = {
+                    "title": brand_name,
+                    "in_stock": in_stock
+                }
+                
+                # Проверяем: был в наличии, а теперь НЕТ
+                if url in old_products:
+                    if old_products[url]["in_stock"] and not in_stock:
+                        send(f"❌ ПРОДАНО\n\n{brand_name}\n\n{url}")
             
-            # Пропускаем дубликаты
-            if url in new_products:
+            except Exception as e:
+                print(f"  Ошибка обработки карточки: {e}")
                 continue
-            
-            # Достаём бренд
-            brand = card.find("img", {"data-brandlogo": "true"})
-            brand_name = brand["alt"] if brand else "Товар"
-            
-            # Проверяем наличие по цене
-            price = card.find("span", class_=lambda x: x and "price" in x.lower())
-            in_stock = price is not None
-            
-            new_products[url] = {
-                "title": brand_name,
-                "in_stock": in_stock
-            }
-            
-            # Проверяем: был в наличии, а теперь НЕТ
-            if url in old_products:
-                if old_products[url]["in_stock"] and not in_stock:
-                    send(f"❌ ПРОДАНО\n\n{brand_name}\n\n{url}")
+    
+    driver.quit()
     
     # Сохраняем новую базу
     with open(DB_FILE, "w", encoding="utf-8") as f:
         json.dump(new_products, f, ensure_ascii=False, indent=2)
     
     print(f"\n✅ Всего проверено товаров: {len(new_products)}")
+    send(f"✅ Парсинг завершён\n\nОтслеживается товаров: {len(new_products)}")
 
 except Exception as e:
     send(f"⚠️ Ошибка парсинга:\n{str(e)}")
     print(f"ERROR: {e}")
+    try:
+        driver.quit()
+    except:
+        pass
