@@ -377,7 +377,7 @@
   },
   "https://collect.tsum.ru/item/ITEM380250": {
     "title": "Товар",
-    "in_stock": true
+    "in_stock": false
   },
   "https://collect.tsum.ru/item/ITEM380237": {
     "title": "Товар",
@@ -669,7 +669,7 @@
   },
   "https://collect.tsum.ru/item/ITEM380062": {
     "title": "Товар",
-    "in_stock": true
+    "in_stock": false
   },
   "https://collect.tsum.ru/item/ITEM380034": {
     "title": "Товар",
