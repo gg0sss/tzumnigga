@@ -353,7 +353,7 @@
   },
   "https://collect.tsum.ru/item/ITEM380361": {
     "title": "Товар",
-    "in_stock": true
+    "in_stock": false
   },
   "https://collect.tsum.ru/item/ITEM191148": {
     "title": "Товар",
@@ -1749,7 +1749,7 @@
   },
   "https://collect.tsum.ru/item/ITEM379160": {
     "title": "Товар",
-    "in_stock": true
+    "in_stock": false
   },
   "https://collect.tsum.ru/item/ITEM379110": {
     "title": "Товар",
@@ -8405,7 +8405,7 @@
   },
   "https://collect.tsum.ru/item/ITEM361333": {
     "title": "Товар",
-    "in_stock": true
+    "in_stock": false
   },
   "https://collect.tsum.ru/item/ITEM361270": {
     "title": "Товар",
@@ -10345,7 +10345,7 @@
   },
   "https://collect.tsum.ru/item/ITEM322774": {
     "title": "Товар",
-    "in_stock": true
+    "in_stock": false
   },
   "https://collect.tsum.ru/item/ITEM322791": {
     "title": "Товар",
@@ -13917,7 +13917,7 @@
   },
   "https://collect.tsum.ru/item/ITEM375382": {
     "title": "Товар",
-    "in_stock": true
+    "in_stock": false
   },
   "https://collect.tsum.ru/item/ITEM375388": {
     "title": "Товар",
