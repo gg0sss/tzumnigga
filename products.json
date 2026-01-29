@@ -495,11 +495,11 @@
     "title": "Товар",
     "in_stock": true
   },
-  "https://collect.tsum.ru/item/ITEM380577": {
+  "https://collect.tsum.ru/item/ITEM380578": {
     "title": "Товар",
     "in_stock": true
   },
-  "https://collect.tsum.ru/item/ITEM380578": {
+  "https://collect.tsum.ru/item/ITEM380577": {
     "title": "Товар",
     "in_stock": true
   },
@@ -839,10 +839,6 @@
     "title": "Товар",
     "in_stock": true
   },
-  "https://collect.tsum.ru/item/ITEM252590": {
-    "title": "Товар",
-    "in_stock": true
-  },
   "https://collect.tsum.ru/item/ITEM263674": {
     "title": "Товар",
     "in_stock": true
@@ -932,6 +928,10 @@
     "in_stock": true
   },
   "https://collect.tsum.ru/item/ITEM378834": {
+    "title": "Товар",
+    "in_stock": true
+  },
+  "https://collect.tsum.ru/item/ITEM252590": {
     "title": "Товар",
     "in_stock": true
   },
@@ -1091,15 +1091,15 @@
     "title": "Товар",
     "in_stock": true
   },
-  "https://collect.tsum.ru/item/ITEM379969": {
-    "title": "Товар",
-    "in_stock": true
-  },
   "https://collect.tsum.ru/item/ITEM379970": {
     "title": "Товар",
     "in_stock": true
   },
   "https://collect.tsum.ru/item/ITEM379971": {
+    "title": "Товар",
+    "in_stock": true
+  },
+  "https://collect.tsum.ru/item/ITEM379969": {
     "title": "Товар",
     "in_stock": true
   },
@@ -1163,15 +1163,15 @@
     "title": "Товар",
     "in_stock": true
   },
-  "https://collect.tsum.ru/item/ITEM275721": {
-    "title": "Товар",
-    "in_stock": true
-  },
   "https://collect.tsum.ru/item/ITEM373785": {
     "title": "Товар",
     "in_stock": true
   },
   "https://collect.tsum.ru/item/ITEM375330": {
+    "title": "Товар",
+    "in_stock": true
+  },
+  "https://collect.tsum.ru/item/ITEM275721": {
     "title": "Товар",
     "in_stock": true
   },
@@ -1431,11 +1431,11 @@
     "title": "Товар",
     "in_stock": true
   },
-  "https://collect.tsum.ru/item/ITEM379577": {
+  "https://collect.tsum.ru/item/ITEM379557": {
     "title": "Товар",
     "in_stock": true
   },
-  "https://collect.tsum.ru/item/ITEM379557": {
+  "https://collect.tsum.ru/item/ITEM379577": {
     "title": "Товар",
     "in_stock": true
   },
@@ -2987,10 +2987,6 @@
     "title": "Товар",
     "in_stock": true
   },
-  "https://collect.tsum.ru/item/ITEM223840": {
-    "title": "Товар",
-    "in_stock": true
-  },
   "https://collect.tsum.ru/item/ITEM223843": {
     "title": "Товар",
     "in_stock": true
@@ -3123,10 +3119,6 @@
     "title": "Товар",
     "in_stock": true
   },
-  "https://collect.tsum.ru/item/ITEM223755": {
-    "title": "Товар",
-    "in_stock": true
-  },
   "https://collect.tsum.ru/item/ITEM223767": {
     "title": "Товар",
     "in_stock": true
@@ -3152,6 +3144,14 @@
     "in_stock": true
   },
   "https://collect.tsum.ru/item/ITEM376932": {
+    "title": "Товар",
+    "in_stock": true
+  },
+  "https://collect.tsum.ru/item/ITEM223755": {
+    "title": "Товар",
+    "in_stock": true
+  },
+  "https://collect.tsum.ru/item/ITEM223840": {
     "title": "Товар",
     "in_stock": true
   },
@@ -3197,7 +3197,7 @@
   },
   "https://collect.tsum.ru/item/ITEM377457": {
     "title": "Товар",
-    "in_stock": true
+    "in_stock": false
   },
   "https://collect.tsum.ru/item/ITEM377437": {
     "title": "Товар",
@@ -10877,7 +10877,7 @@
   },
   "https://collect.tsum.ru/item/ITEM278275": {
     "title": "Товар",
-    "in_stock": true
+    "in_stock": false
   },
   "https://collect.tsum.ru/item/ITEM277849": {
     "title": "Товар",
@@ -11637,7 +11637,7 @@
   },
   "https://collect.tsum.ru/item/ITEM53001": {
     "title": "Товар",
-    "in_stock": true
+    "in_stock": false
   },
   "https://collect.tsum.ru/item/ITEM58264": {
     "title": "Товар",
@@ -13463,11 +13463,11 @@
     "title": "Товар",
     "in_stock": true
   },
-  "https://collect.tsum.ru/item/ITEM133675": {
+  "https://collect.tsum.ru/item/ITEM156734": {
     "title": "Товар",
     "in_stock": true
   },
-  "https://collect.tsum.ru/item/ITEM156734": {
+  "https://collect.tsum.ru/item/ITEM133675": {
     "title": "Товар",
     "in_stock": true
   },
